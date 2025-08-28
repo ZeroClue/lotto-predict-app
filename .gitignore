@@ -1,0 +1,28 @@
+# Node.js
+node_modules/
+dist/
+build/
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Logs
+logs/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Gemini specific
+.gemini/
+
+# Ignore folder
+.ignore/
