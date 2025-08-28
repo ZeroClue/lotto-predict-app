@@ -15,6 +15,17 @@ export interface LotteryPrediction {
   analysisDate: Date;
 }
 
+// Constants for prediction algorithm
+const PREDICTION_CONSTANTS = {
+  HOT_NUMBERS_FOR_SUGGESTIONS: 15,
+  HOT_NUMBERS_IN_SUGGESTION: 3,
+  MEDIUM_NUMBERS_IN_SUGGESTION: 2,
+  TOTAL_SUGGESTED_NUMBERS: 6,
+  DEFAULT_HOT_COLD_COUNT: 10,
+  MEDIUM_RANGE_START: 0.3,
+  MEDIUM_RANGE_END: 0.7,
+} as const;
+
 export class LotteryDataService {
   async getRecentDraws(limit: number = 20): Promise<LotteryDraw[]> {
     return await lotteryRepository.getRecentDraws(limit);
@@ -38,8 +49,8 @@ export class LotteryDataService {
     }
 
     const frequencyAnalysis = this.analyzeNumberFrequency(draws);
-    const hotNumbers = this.getHotNumbers(frequencyAnalysis, 10);
-    const coldNumbers = this.getColdNumbers(frequencyAnalysis, 10);
+    const hotNumbers = this.getHotNumbers(frequencyAnalysis, PREDICTION_CONSTANTS.DEFAULT_HOT_COLD_COUNT);
+    const coldNumbers = this.getColdNumbers(frequencyAnalysis, PREDICTION_CONSTANTS.DEFAULT_HOT_COLD_COUNT);
     const suggestedNumbers = this.generateSuggestedNumbers(frequencyAnalysis, draws[0]);
 
     return {
@@ -86,28 +97,31 @@ export class LotteryDataService {
   }
 
   private generateSuggestedNumbers(frequencyAnalysis: NumberFrequency[], mostRecentDraw: LotteryDraw): number[] {
-    const hotNumbers = this.getHotNumbers(frequencyAnalysis, 15);
+    const hotNumbers = this.getHotNumbers(frequencyAnalysis, PREDICTION_CONSTANTS.HOT_NUMBERS_FOR_SUGGESTIONS);
     const mediumNumbers = frequencyAnalysis
-      .slice(Math.floor(frequencyAnalysis.length * 0.3), Math.floor(frequencyAnalysis.length * 0.7))
+      .slice(
+        Math.floor(frequencyAnalysis.length * PREDICTION_CONSTANTS.MEDIUM_RANGE_START), 
+        Math.floor(frequencyAnalysis.length * PREDICTION_CONSTANTS.MEDIUM_RANGE_END)
+      )
       .map(item => item.number);
     
     const suggestions: number[] = [];
     
     // Mix of hot (3), medium (2), and one random from all
-    suggestions.push(...this.getRandomFromArray(hotNumbers, 3));
-    suggestions.push(...this.getRandomFromArray(mediumNumbers, 2));
+    suggestions.push(...this.getRandomFromArray(hotNumbers, PREDICTION_CONSTANTS.HOT_NUMBERS_IN_SUGGESTION));
+    suggestions.push(...this.getRandomFromArray(mediumNumbers, PREDICTION_CONSTANTS.MEDIUM_NUMBERS_IN_SUGGESTION));
     
     // Avoid exact repetition of most recent draw
     const availableNumbers = frequencyAnalysis
       .map(item => item.number)
       .filter(num => !mostRecentDraw.winningNumbers.includes(num) && !suggestions.includes(num));
     
-    if (availableNumbers.length > 0 && suggestions.length < 6) {
-      suggestions.push(...this.getRandomFromArray(availableNumbers, 6 - suggestions.length));
+    if (availableNumbers.length > 0 && suggestions.length < PREDICTION_CONSTANTS.TOTAL_SUGGESTED_NUMBERS) {
+      suggestions.push(...this.getRandomFromArray(availableNumbers, PREDICTION_CONSTANTS.TOTAL_SUGGESTED_NUMBERS - suggestions.length));
     }
 
     // Ensure we have exactly 6 numbers, fill with hot numbers if needed
-    while (suggestions.length < 6) {
+    while (suggestions.length < PREDICTION_CONSTANTS.TOTAL_SUGGESTED_NUMBERS) {
       const remaining = hotNumbers.filter(num => !suggestions.includes(num));
       if (remaining.length > 0) {
         suggestions.push(remaining[0]);
@@ -116,11 +130,16 @@ export class LotteryDataService {
       }
     }
 
-    return suggestions.slice(0, 6).sort((a, b) => a - b);
+    return suggestions.slice(0, PREDICTION_CONSTANTS.TOTAL_SUGGESTED_NUMBERS).sort((a, b) => a - b);
   }
 
   private getRandomFromArray<T>(array: T[], count: number): T[] {
-    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    // Fisher-Yates shuffle for proper randomization
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     return shuffled.slice(0, Math.min(count, array.length));
   }
 }
