@@ -1,28 +1,121 @@
-# Node.js
+# Dependencies
 node_modules/
-dist/
-build/
-.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Python
-__pycache__/
-*.pyc
-.venv/
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production builds
+.vercel/
+.netlify/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Testing
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+playwright-report/
+test-results.xml
 
 # Logs
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# IDEs
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# IDEs and editors
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Gemini specific
+# Windows
+$RECYCLE.BIN/
+
+# Python (if used for tooling)
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.temp/
+
+# AI/ML specific
 .gemini/
+.ai/
+*.pkl
+*.model
 
-# Ignore folder
+# Project specific
 .ignore/
+
+# Supabase (if using local development)
+.supabase/
+supabase/functions/.vscode/
+
+# Storybook build outputs
+storybook-static/
+
+# Turbo
+.turbo/
