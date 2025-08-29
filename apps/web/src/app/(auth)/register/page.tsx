@@ -20,7 +20,13 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       const { user, token } = await authServiceFrontend.register(email, password, username);
-      authStoreLogin(user, token);
+      // Create a full User object with default dates
+      const fullUser = {
+        ...user,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      authStoreLogin(fullUser, token);
       toast({
         title: 'Registration successful.',
         description: 'You have been registered and logged in.',

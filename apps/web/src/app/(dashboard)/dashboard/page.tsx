@@ -63,6 +63,38 @@ export default function DashboardPage() {
             </Link>
           </CardBody>
         </Card>
+
+        <Card>
+          <CardBody>
+            <Heading size="md" mb={2} color="orange.600">
+              Play Games
+            </Heading>
+            <Text mb={4} color="gray.600">
+              Play fun games and earn crypto rewards and NFTs
+            </Text>
+            <Link href="/games">
+              <Button colorScheme="orange" size="sm">
+                Play Games
+              </Button>
+            </Link>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody>
+            <Heading size="md" mb={2} color="pink.600">
+              NFT Collection
+            </Heading>
+            <Text mb={4} color="gray.600">
+              View your earned NFTs and manage your collection
+            </Text>
+            <Link href="/collection/nfts">
+              <Button colorScheme="pink" size="sm">
+                View Collection
+              </Button>
+            </Link>
+          </CardBody>
+        </Card>
       </SimpleGrid>
     </VStack>
   );

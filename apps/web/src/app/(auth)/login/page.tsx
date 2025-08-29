@@ -19,7 +19,13 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const { user, token } = await authServiceFrontend.login(email, password);
-      authStoreLogin(user, token);
+      // Create a full User object with default dates
+      const fullUser = {
+        ...user,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      authStoreLogin(fullUser, token);
       toast({
         title: 'Login successful.',
         description: 'You have been logged in.',
