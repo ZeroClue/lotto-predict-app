@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value; // Assuming token is stored in a cookie
   const isAuthenticated = !!token;
 
-  const protectedRoutes = ['/dashboard', '/predictions']; // Protected routes requiring authentication
+  const protectedRoutes = ['/dashboard', '/predictions', '/games', '/collection']; // Protected routes requiring authentication
   const authRoutes = ['/login', '/register']; // Routes for authentication
 
   const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route));
@@ -29,5 +29,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)', '/dashboard/:path*', '/predictions/:path*', '/login', '/register'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)', '/dashboard/:path*', '/predictions/:path*', '/games/:path*', '/collection/:path*', '/login', '/register'],
 };

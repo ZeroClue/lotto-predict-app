@@ -2,9 +2,12 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Flex, Container, Text, Button, VStack, HStack } from '@chakra-ui/react';
+import { Box, Flex, Container, Text, Button, VStack, HStack, Badge, Icon } from '@chakra-ui/react';
+import { FaCoins, FaGem } from 'react-icons/fa';
 import Link from 'next/link';
 import { useAuthStore } from '../../stores/authStore';
+import { useCryptoStore } from '../../stores/cryptoStore';
+import { useNFTStore } from '../../stores/nftStore';
 
 export default function DashboardLayout({
   children,
@@ -12,6 +15,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, logout } = useAuthStore();
+  const { balance, fetchBalance } = useCryptoStore();
+  const { nfts, fetchNFTs } = useNFTStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,6 +24,18 @@ export default function DashboardLayout({
       router.push('/login');
     }
   }, [user, router]);
+
+  useEffect(() => {
+    if (user && !balance) {
+      fetchBalance().catch(console.error);
+    }
+  }, [user, balance, fetchBalance]);
+
+  useEffect(() => {
+    if (user && nfts.length === 0) {
+      fetchNFTs().catch(console.error);
+    }
+  }, [user, nfts.length, fetchNFTs]);
 
   const handleLogout = async () => {
     await logout();
@@ -49,6 +66,34 @@ export default function DashboardLayout({
                   Predictions
                 </Button>
               </Link>
+              <Link href="/games">
+                <Button variant="ghost" size="sm">
+                  Games
+                </Button>
+              </Link>
+              <Link href="/collection/nfts">
+                <Button variant="ghost" size="sm">
+                  Collection
+                </Button>
+              </Link>
+              <HStack spacing={4}>
+                {balance && (
+                  <HStack spacing={1} px={2} data-testid="crypto-balance">
+                    <Icon as={FaCoins} color="yellow.500" />
+                    <Badge colorScheme="yellow" variant="solid">
+                      {balance.balance.toFixed(1)}
+                    </Badge>
+                  </HStack>
+                )}
+                {nfts.length > 0 && (
+                  <HStack spacing={1} px={2} data-testid="nft-count-badge">
+                    <Icon as={FaGem} color="purple.500" />
+                    <Badge colorScheme="purple" variant="solid">
+                      {nfts.length}
+                    </Badge>
+                  </HStack>
+                )}
+              </HStack>
               <Button onClick={handleLogout} size="sm" colorScheme="red" variant="outline">
                 Logout
               </Button>

@@ -22,3 +22,32 @@ export interface UserDisplay {
   provider?: 'email' | 'google' | 'facebook' | 'github';
   providerId?: string;
 }
+
+export interface Game {
+  id: string;
+  name: string;
+  description?: string;
+  rewardAmount: number;
+  nftAwardThreshold?: number; // e.g., complete 5 times for an NFT
+  isActive: boolean;
+  imageUrl?: string;
+}
+
+export interface CryptoBalance {
+  userId: string;
+  balance: number;
+  updatedAt: Date;
+}
+
+export interface NFT {
+  id: string;
+  ownerId: string;
+  name: string;
+  description?: string;
+  imageUrl: string;
+  rarity: string;
+  mintDate: Date;
+  dynamicProperties?: Record<string, any>; // Properties that can change
+  isFeatured: boolean;
+  baseValue: number; // Intrinsic value in custom cryptocurrency
+}
