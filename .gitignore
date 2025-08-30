@@ -16,6 +16,12 @@ dist/
 .vercel/
 .netlify/
 
+# Vercel deployment artifacts
+.vercel/
+apps/web/.next/
+apps/web/out/
+vercel-build.log
+
 # Environment variables
 .env
 .env.local
@@ -47,6 +53,11 @@ pids/
 
 # Optional npm cache directory
 .npm
+
+# Package manager lock files (monorepo specific)
+apps/*/package-lock.json
+apps/*/yarn.lock
+apps/*/pnpm-lock.yaml
 
 # Optional REPL history
 .node_repl_history
