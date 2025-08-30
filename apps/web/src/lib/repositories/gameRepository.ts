@@ -1,15 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient } from '../db';
 import { Game } from '../types';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class GameRepository {
   /**
    * Get all active games
    */
   async getActiveGames(): Promise<Game[]> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('games')
       .select('*')
@@ -27,6 +24,7 @@ export class GameRepository {
    * Get game by ID
    */
   async getGameById(id: string): Promise<Game | null> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('games')
       .select('*')

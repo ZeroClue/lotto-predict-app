@@ -1,15 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient } from '../db';
 import { CryptoBalance } from '../types';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class CryptoBalanceRepository {
   /**
    * Get crypto balance for a user
    */
   async getUserBalance(userId: string): Promise<CryptoBalance | null> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('crypto_balances')
       .select('*')
@@ -30,6 +27,7 @@ export class CryptoBalanceRepository {
    * Initialize crypto balance for a new user
    */
   async initializeUserBalance(userId: string): Promise<CryptoBalance> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('crypto_balances')
       .insert({
@@ -59,6 +57,7 @@ export class CryptoBalanceRepository {
 
     const newBalance = balance.balance + amount;
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('crypto_balances')
       .update({

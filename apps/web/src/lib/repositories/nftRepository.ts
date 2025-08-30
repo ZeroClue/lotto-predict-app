@@ -1,9 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseClient } from '../db';
 import { NFT } from '../types';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export interface NFTTemplate {
   id: string;
@@ -20,6 +16,7 @@ export class NFTRepository {
    * Get all NFTs for a specific user
    */
   async getUserNFTs(userId: string): Promise<NFT[]> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nfts')
       .select('*')
@@ -37,6 +34,7 @@ export class NFTRepository {
    * Get NFT by ID for a specific user
    */
   async getNFTById(nftId: string, userId: string): Promise<NFT | null> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nfts')
       .select('*')
@@ -76,6 +74,7 @@ export class NFTRepository {
       is_featured: false,
     };
 
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nfts')
       .insert([nftData])
@@ -93,6 +92,7 @@ export class NFTRepository {
    * Update NFT featured status
    */
   async setFeatured(nftId: string, userId: string, isFeatured: boolean): Promise<NFT> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nfts')
       .update({ is_featured: isFeatured })
@@ -116,6 +116,7 @@ export class NFTRepository {
     userId: string,
     properties: Record<string, any>
   ): Promise<NFT> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nfts')
       .update({ dynamic_properties: properties })
@@ -135,6 +136,7 @@ export class NFTRepository {
    * Get NFT template by ID
    */
   async getNFTTemplate(templateId: string): Promise<NFTTemplate | null> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nft_templates')
       .select('*')
@@ -155,6 +157,7 @@ export class NFTRepository {
    * Get all available NFT templates
    */
   async getNFTTemplates(): Promise<NFTTemplate[]> {
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from('nft_templates')
       .select('*')
