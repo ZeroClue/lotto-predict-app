@@ -17,6 +17,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Game } from '../../../../lib/types';
 import { LuckyNumberPuzzle } from '../../../../features/games/components/LuckyNumberPuzzle';
+import { ColorMemoryGame } from '../../../../features/games/components/ColorMemoryGame';
 import { CryptoReward } from '../../../../features/games/components/CryptoReward';
 import { useGameStore } from '../../../../stores/gameStore';
 import { useNFTStore } from '../../../../stores/nftStore';
@@ -102,6 +103,19 @@ export default function GamePage() {
     router.push('/games');
   };
 
+  const getGameSpecificMessage = () => {
+    if (!game) return undefined;
+    
+    switch (game.name) {
+      case 'Color Memory Challenge':
+        return `You completed all 5 rounds! Your memory is incredible!`;
+      case 'Lucky Number Puzzle':
+        return `You found the lucky number! Fortune favors you!`;
+      default:
+        return undefined;
+    }
+  };
+
   if (loading) {
     return (
       <Box p={6}>
@@ -131,7 +145,11 @@ export default function GamePage() {
     return (
       <Box p={6}>
         <VStack spacing={6}>
-          <CryptoReward earnedAmount={earnedAmount} />
+          <CryptoReward 
+            earnedAmount={earnedAmount} 
+            gameName={game?.name}
+            gameSpecificMessage={getGameSpecificMessage()}
+          />
           <VStack spacing={4}>
             <Button colorScheme="blue" onClick={handlePlayAgain}>
               Play Again
@@ -194,6 +212,12 @@ export default function GamePage() {
         <Box>
           {game.name === 'Lucky Number Puzzle' && (
             <LuckyNumberPuzzle
+              onComplete={handleGameComplete}
+              isCompleting={isCompletingGame}
+            />
+          )}
+          {game.name === 'Color Memory Challenge' && (
+            <ColorMemoryGame
               onComplete={handleGameComplete}
               isCompleting={isCompletingGame}
             />

@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 
 interface CryptoRewardProps {
   earnedAmount: number;
+  gameName?: string;
+  gameSpecificMessage?: string;
 }
 
 // Keyframes for animations
@@ -36,10 +38,36 @@ const fadeInUp = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-export function CryptoReward({ earnedAmount }: CryptoRewardProps) {
+export function CryptoReward({ earnedAmount, gameName, gameSpecificMessage }: CryptoRewardProps) {
   const [showConfetti, setShowConfetti] = useState(true);
   const cardBg = useColorModeValue('white', 'gray.700');
   const goldColor = useColorModeValue('yellow.500', 'yellow.400');
+
+  // Game-specific configurations
+  const getGameConfig = () => {
+    switch (gameName) {
+      case 'Color Memory Challenge':
+        return {
+          emoji: '🎨🧠💫',
+          successMessage: gameSpecificMessage || 'Amazing memory skills!',
+          celebrationText: 'Memory Master!'
+        };
+      case 'Lucky Number Puzzle':
+        return {
+          emoji: '🎲🍀✨',
+          successMessage: gameSpecificMessage || 'Lucky guess!',
+          celebrationText: 'Number Wizard!'
+        };
+      default:
+        return {
+          emoji: '🪙✨💎',
+          successMessage: gameSpecificMessage || 'You completed the game!',
+          celebrationText: 'Game Champion!'
+        };
+    }
+  };
+
+  const gameConfig = getGameConfig();
 
   useEffect(() => {
     // Hide confetti after animation
@@ -122,8 +150,11 @@ export function CryptoReward({ earnedAmount }: CryptoRewardProps) {
           <Text fontSize="2xl" fontWeight="bold" color="green.500">
             🎉 Congratulations!
           </Text>
-          <Text fontSize="lg" fontWeight="semibold">
-            You completed the game!
+          <Text fontSize="lg" fontWeight="semibold" color="purple.600" dark={{ color: 'purple.400' }}>
+            {gameConfig.celebrationText}
+          </Text>
+          <Text fontSize="md" color="gray.600" dark={{ color: 'gray.300' }}>
+            {gameConfig.successMessage}
           </Text>
         </VStack>
 
@@ -153,9 +184,9 @@ export function CryptoReward({ earnedAmount }: CryptoRewardProps) {
           Your crypto balance has been updated!
         </Text>
 
-        {/* Celebration emoji */}
+        {/* Game-specific celebration emoji */}
         <Text fontSize="3xl" animation={`${bounce} 2s ease-in-out infinite`}>
-          🪙✨💎
+          {gameConfig.emoji}
         </Text>
       </VStack>
 

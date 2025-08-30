@@ -46,7 +46,7 @@ export function NumberSuggestions({
 
   // Helper to get frequency data for a number
   const getNumberFrequency = (number: number) => {
-    return predictions?.frequencyAnalysis.find(f => f.number === number);
+    return predictions?.frequencyAnalysis?.find(f => f.number === number);
   };
 
   if (!predictions) {
@@ -167,64 +167,6 @@ export function NumberSuggestions({
           <Box>
             <HStack spacing={2} mb={3}>
               <Icon as={FireIcon} color="red.500" boxSize={5} />
-              <Text fontSize="sm" color={textColor} fontWeight="bold">
-                Hot Numbers (Most Frequent)
-              </Text>
-              {hotColdAnalysis && (
-                <Badge colorScheme="red" size="sm">
-                  ≥{hotColdAnalysis.threshold.hot} times
-                </Badge>
-              )}
-            </HStack>
-            <SimpleGrid columns={[4, 5, 6]} spacing={3}>
-              {(hotColdAnalysis?.hotNumbers || predictions.hotNumbers).slice(0, 12).map((number, index) => {
-                const frequencyData = getNumberFrequency(number);
-                return (
-                  <Tooltip
-                    key={index}
-                    label={
-                      <Box>
-                        <Text fontWeight="bold">Hot Number {number}</Text>
-                        {frequencyData && (
-                          <>
-                            <Text>Drawn {frequencyData.frequency} times</Text>
-                            <Text>Frequency: {frequencyData.percentage.toFixed(1)}%</Text>
-                          </>
-                        )}
-                        <Text>Above average frequency</Text>
-                      </Box>
-                    }
-                    placement="top"
-                  >
-                    <Circle
-                      size="40px"
-                      bg="red.500"
-                      color="white"
-                      fontWeight="bold"
-                      fontSize="sm"
-                      cursor="pointer"
-                      transition="transform 0.2s"
-                      _hover={{ transform: 'scale(1.1)' }}
-                      position="relative"
-                    >
-                      {number}
-                    </Circle>
-                  </Tooltip>
-                );
-              })}
-            </SimpleGrid>
-          </Box>
-
-          <Divider />
-
-          {/* Cold Numbers Section */}
-          <Box>
-            <HStack spacing={2} mb={3}>
-              <Icon as={SnowflakeIcon} color="blue.500" boxSize={5} />
-              {/* Hot Numbers Section */}
-          <Box>
-            <HStack spacing={2} mb={3}>
-              <Icon as={FaFire} color="red.500" boxSize={5} />
               <Text fontSize="sm" color={textColor} fontWeight="bold">
                 Hot Numbers (Most Frequent)
               </Text>

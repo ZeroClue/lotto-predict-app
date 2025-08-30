@@ -119,3 +119,27 @@ storybook-static/
 
 # Turbo
 .turbo/
+
+# Claude Code
+.claude/settings.local.json
+
+# Additional Next.js patterns
+*.tgz
+.swc/
+
+# Blockchain/Web3 specific
+.secrets/
+*.private
+wallet.json
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Local configuration
+config.local.json
+settings.local.json

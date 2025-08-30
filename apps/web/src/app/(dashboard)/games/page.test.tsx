@@ -53,11 +53,11 @@ describe('GamesPage', () => {
       },
       {
         id: '2',
-        name: 'Color Match Challenge',
-        description: 'Match the colors in sequence',
-        rewardAmount: 15,
+        name: 'Color Memory Challenge',
+        description: 'Remember and repeat the color sequence to earn crypto rewards! Progressive difficulty increases with each round.',
+        rewardAmount: 12,
         isActive: true,
-        nftAwardThreshold: 3,
+        nftAwardThreshold: 4,
       },
     ];
 
@@ -72,15 +72,15 @@ describe('GamesPage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Lucky Number Puzzle')).toBeInTheDocument();
-      expect(screen.getByText('Color Match Challenge')).toBeInTheDocument();
+      expect(screen.getByText('Color Memory Challenge')).toBeInTheDocument();
     });
 
     expect(screen.getByText('Guess the lucky number between 1 and 10')).toBeInTheDocument();
-    expect(screen.getByText('Match the colors in sequence')).toBeInTheDocument();
+    expect(screen.getByText('Remember and repeat the color sequence to earn crypto rewards! Progressive difficulty increases with each round.')).toBeInTheDocument();
     expect(screen.getByText('10 crypto')).toBeInTheDocument();
-    expect(screen.getByText('15 crypto')).toBeInTheDocument();
+    expect(screen.getByText('12 crypto')).toBeInTheDocument();
     expect(screen.getByText('NFT @ 5 wins')).toBeInTheDocument();
-    expect(screen.getByText('NFT @ 3 wins')).toBeInTheDocument();
+    expect(screen.getByText('NFT @ 4 wins')).toBeInTheDocument();
   });
 
   it('should render error state when fetch fails', async () => {
