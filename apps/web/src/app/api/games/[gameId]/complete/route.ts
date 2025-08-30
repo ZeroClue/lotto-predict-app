@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { GameService } from '../../../../../lib/services/gameService';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+function getSupabaseServiceClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 const gameService = new GameService();
 
@@ -32,6 +34,7 @@ export async function POST(
     }
 
     const token = authHeader.substring(7);
+    const supabase = getSupabaseServiceClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
