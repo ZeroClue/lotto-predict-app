@@ -1,4 +1,5 @@
 import { apiClient } from '../../../services/apiClient';
+import { AnalyticsFilters, AdvancedAnalytics } from '../../../lib/services/lotteryAnalyticsService';
 
 export interface LotteryDraw {
   id: string;
@@ -36,6 +37,11 @@ export interface LotteryPredictionsResponse {
   data: LotteryPrediction;
 }
 
+export interface AdvancedAnalyticsResponse {
+  success: boolean;
+  data: AdvancedAnalytics;
+}
+
 export class LotteryService {
   async getRecentDraws(params?: {
     limit?: number;
@@ -55,7 +61,7 @@ export class LotteryService {
     const response = await apiClient.get<LotteryDrawsResponse>(url);
     
     if (!response.success) {
-      throw new Error(response.error || 'Failed to fetch lottery draws');
+      throw new Error('Failed to fetch lottery draws');
     }
 
     // Convert date strings to Date objects
@@ -76,7 +82,7 @@ export class LotteryService {
     const response = await apiClient.get<LotteryPredictionsResponse>(url);
     
     if (!response.success) {
-      throw new Error(response.error || 'Failed to fetch predictions');
+      throw new Error('Failed to fetch predictions');
     }
 
     // Convert date strings to Date objects
@@ -87,6 +93,43 @@ export class LotteryService {
         ...response.data.mostRecentDraw,
         drawDate: new Date(response.data.mostRecentDraw.drawDate),
       } : null,
+    };
+  }
+
+  async getAnalytics(filters: AnalyticsFilters): Promise<AdvancedAnalytics> {
+    const searchParams = new URLSearchParams();
+
+    if (filters.lotteryName) {
+      searchParams.set('lotteryName', filters.lotteryName);
+    }
+    if (filters.dateRange) {
+      searchParams.set('startDate', filters.dateRange.startDate.toISOString());
+      searchParams.set('endDate', filters.dateRange.endDate.toISOString());
+    }
+    if (filters.analysisType) {
+      searchParams.set('analysisType', filters.analysisType);
+    }
+    if (filters.periodLength) {
+      searchParams.set('periodLength', filters.periodLength.toString());
+    }
+
+    const url = `/api/lottery/analytics${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    const response = await apiClient.get<AdvancedAnalyticsResponse>(url);
+
+    if (!response.success) {
+      throw new Error('Failed to fetch advanced analytics');
+    }
+
+    return {
+      ...response.data,
+      analysisDate: new Date(response.data.analysisDate),
+      statisticalSummary: {
+        ...response.data.statisticalSummary,
+        dateRange: {
+          startDate: new Date(response.data.statisticalSummary.dateRange.startDate),
+          endDate: new Date(response.data.statisticalSummary.dateRange.endDate),
+        }
+      }
     };
   }
 }

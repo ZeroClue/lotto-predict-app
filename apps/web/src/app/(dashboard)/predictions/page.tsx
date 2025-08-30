@@ -20,7 +20,9 @@ import {
   Text,
   Badge,
   Divider,
+  Link,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { usePredictionStore } from '../../../stores/predictionStore';
 import { HistoricalChart } from '../../../features/lottery/components/HistoricalChart';
 import { NumberSuggestions } from '../../../features/lottery/components/NumberSuggestions';
@@ -86,6 +88,11 @@ export default function PredictionsPage() {
             >
               Refresh
             </Button>
+            <Link as={NextLink} href="/predictions/advanced">
+              <Button colorScheme="purple" size="sm">
+                Advanced Analytics
+              </Button>
+            </Link>
           </HStack>
         </HStack>
       </Box>

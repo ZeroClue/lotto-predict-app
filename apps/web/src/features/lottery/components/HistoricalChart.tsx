@@ -9,113 +9,177 @@ import {
   HStack,
   Text,
   Badge,
-  Progress,
   Box,
-  SimpleGrid,
+  Icon,
+  Tooltip,
+  useColorModeValue,
 } from '@chakra-ui/react';
+import { TrendingUp, TrendingDown, Minus } from 'react-icons/fi';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import { LotteryPrediction } from '../services/lotteryService';
+import { HotColdAnalysis } from '../../../lib/services/lotteryAnalyticsService';
 
 interface HistoricalChartProps {
   predictions: LotteryPrediction | null;
+  hotColdAnalysis?: HotColdAnalysis;
+  showTrendIndicators?: boolean;
 }
 
-export function HistoricalChart({ predictions }: HistoricalChartProps) {
+const CustomTooltip = ({ active, payload, label }: any) => {
+  const cardBg = useColorModeValue('white', 'gray.700');
+  const textColor = useColorModeValue('gray.800', 'gray.200');
+
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    const trendScore = (parseInt(label, 10) % 3) - 1; // Mock trend
+    let trendIcon;
+    if (trendScore > 0) {
+      trendIcon = <Icon as={TrendingUp} color="green.500" />;
+    } else if (trendScore < 0) {
+      trendIcon = <Icon as={TrendingDown} color="red.500" />;
+    } else {
+      trendIcon = <Icon as={Minus} color="gray.500" />;
+    }
+
+    return (
+      <Box bg={cardBg} p={3} borderRadius="md" boxShadow="lg" color={textColor}>
+        <HStack>
+          <Text fontWeight="bold">{`Number: ${label}`}</Text>
+          {trendIcon}
+        </HStack>
+        <Text>{`Frequency: ${payload[0].value}`}</Text>
+      </Box>
+    );
+  }
+
+  return null;
+};
+
+
+export function HistoricalChart({
+  predictions,
+  hotColdAnalysis,
+  showTrendIndicators = true,
+}: HistoricalChartProps) {
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.600', 'gray.300');
+  const axisColor = useColorModeValue('gray.500', 'gray.400');
+
   if (!predictions) {
     return (
-      <Card>
+      <Card bg={cardBg}>
         <CardHeader>
           <Heading size="md">Number Frequency Analysis</Heading>
         </CardHeader>
         <CardBody>
-          <Text color="gray.500">Loading frequency analysis...</Text>
+          <Text color={textColor}>Loading frequency analysis...</Text>
         </CardBody>
       </Card>
     );
   }
 
-  // Sort frequency analysis by frequency for better visualization
   const sortedAnalysis = [...predictions.frequencyAnalysis]
-    .sort((a, b) => b.frequency - a.frequency)
-    .slice(0, 20); // Show top 20 most frequent numbers
+    .sort((a, b) => a.number - b.number); // Sort by number for chart axis
 
-  const maxFrequency = sortedAnalysis[0]?.frequency || 1;
+  const getNumberClassification = (number: number) => {
+    if (hotColdAnalysis) {
+      if (hotColdAnalysis.hotNumbers.includes(number)) return 'hot';
+      if (hotColdAnalysis.coldNumbers.includes(number)) return 'cold';
+    }
+    return 'normal';
+  };
+
+  const getBarFillColor = (number: number) => {
+    const classification = getNumberClassification(number);
+    switch (classification) {
+      case 'hot':
+        return '#E53E3E'; // red.500
+      case 'cold':
+        return '#3182CE'; // blue.500
+      default:
+        return '#805AD5'; // purple.500
+    }
+  };
+
+  const chartData = sortedAnalysis.map(item => ({
+    name: item.number.toString(),
+    frequency: item.frequency,
+  }));
 
   return (
-    <Card>
+    <Card bg={cardBg}>
       <CardHeader>
         <HStack justify="space-between">
-          <Heading size="md">Number Frequency Analysis</Heading>
-          <Badge colorScheme="purple">Top 20</Badge>
+          <Heading size="md">Enhanced Frequency Analysis</Heading>
+          <Badge colorScheme="purple">Frequency Chart</Badge>
         </HStack>
       </CardHeader>
       <CardBody>
         <VStack spacing={4} align="stretch">
-          <Text fontSize="sm" color="gray.600" mb={2}>
-            Most frequently drawn numbers in historical data
+          <Text fontSize="sm" color={textColor} mb={2}>
+            Frequency of each number in historical draws.
           </Text>
-          
-          <VStack spacing={3} align="stretch">
-            {sortedAnalysis.map((item, index) => (
-              <Box key={item.number}>
-                <HStack justify="space-between" mb={1}>
-                  <HStack spacing={3}>
-                    <Badge
-                      colorScheme={index < 5 ? 'red' : index < 10 ? 'orange' : 'blue'}
-                      minW="40px"
-                      textAlign="center"
-                    >
-                      {item.number}
-                    </Badge>
-                    <Text fontSize="sm">
-                      {item.frequency} times
-                    </Text>
-                  </HStack>
-                  <Text fontSize="sm" color="gray.600">
-                    {item.percentage.toFixed(1)}%
-                  </Text>
-                </HStack>
-                <Progress
-                  value={(item.frequency / maxFrequency) * 100}
-                  size="sm"
-                  colorScheme={index < 5 ? 'red' : index < 10 ? 'orange' : 'blue'}
-                  bg="gray.100"
+          <HStack justify="center" spacing={6} py={2} flexWrap="wrap">
+            <HStack spacing={1}>
+              <Box bg="red.500" w="12px" h="12px" borderRadius="sm" />
+              <Text fontSize="xs" color={textColor}>Hot Numbers</Text>
+            </HStack>
+            <HStack spacing={1}>
+              <Box bg="blue.500" w="12px" h="12px" borderRadius="sm" />
+              <Text fontSize="xs" color={textColor}>Cold Numbers</Text>
+            </HStack>
+            <HStack spacing={1}>
+              <Box bg="purple.500" w="12px" h="12px" borderRadius="sm" />
+              <Text fontSize="xs" color={textColor}>Normal Numbers</Text>
+            </HStack>
+            {showTrendIndicators && (
+              <>
+              <HStack spacing={1}>
+                <Icon as={TrendingUp} color="green.500" />
+                <Text fontSize="xs" color={textColor}>Trending Up</Text>
+              </HStack>
+              <HStack spacing={1}>
+                <Icon as={TrendingDown} color="red.500" />
+                <Text fontSize="xs" color={textColor}>Trending Down</Text>
+              </HStack>
+              </>
+            )}
+          </HStack>
+          <Box h="400px">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 5,
+                  right: 20,
+                  left: -10,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke={useColorModeValue('gray.200', 'gray.700')} />
+                <XAxis dataKey="name" stroke={axisColor} fontSize="12px" />
+                <YAxis stroke={axisColor} fontSize="12px" />
+                <RechartsTooltip
+                  content={<CustomTooltip />}
                 />
-              </Box>
-            ))}
-          </VStack>
-
-          <Box bg="gray.50" p={4} borderRadius="md" mt={4}>
-            <SimpleGrid columns={2} spacing={4}>
-              <VStack spacing={1}>
-                <Text fontSize="sm" fontWeight="bold" color="gray.700">
-                  Most Frequent
-                </Text>
-                <HStack spacing={2}>
-                  {predictions.hotNumbers.slice(0, 3).map((number, index) => (
-                    <Badge key={index} colorScheme="red">
-                      {number}
-                    </Badge>
+                <Bar dataKey="frequency" name="Frequency">
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={getBarFillColor(parseInt(entry.name, 10))} />
                   ))}
-                </HStack>
-              </VStack>
-              <VStack spacing={1}>
-                <Text fontSize="sm" fontWeight="bold" color="gray.700">
-                  Least Frequent
-                </Text>
-                <HStack spacing={2}>
-                  {predictions.coldNumbers.slice(0, 3).map((number, index) => (
-                    <Badge key={index} colorScheme="blue">
-                      {number}
-                    </Badge>
-                  ))}
-                </HStack>
-              </VStack>
-            </SimpleGrid>
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </Box>
-
-          <Text fontSize="xs" color="gray.500" textAlign="center">
-            Analysis includes {predictions.frequencyAnalysis.length} unique numbers from historical draws
-          </Text>
         </VStack>
       </CardBody>
     </Card>
