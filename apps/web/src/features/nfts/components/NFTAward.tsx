@@ -14,10 +14,10 @@ import {
   Badge,
   Button,
   useColorModeValue,
-  keyframes,
   Flex,
   Icon,
 } from '@chakra-ui/react';
+import { keyframes } from '@emotion/react';
 import { FaGem, FaStar, FaTimes } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { NFT } from '../../../lib/types';
