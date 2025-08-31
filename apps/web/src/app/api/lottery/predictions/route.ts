@@ -65,21 +65,11 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    const response: EnhancedPredictionsResponse = {
-      predictions,
-      analytics: analyticsData || {
-        frequencyAnalysis: [],
-        hotColdAnalysis: { hotNumbers: [], coldNumbers: [], threshold: { hot: 0, cold: 0 } },
-      },
-      metadata: {
-        filters: analyticsFilters,
-        generatedAt: new Date(),
-      },
-    };
-
+    // For backward compatibility, return the predictions directly
+    // The enhanced response structure is available but the frontend expects the basic structure
     return NextResponse.json({
       success: true,
-      data: response,
+      data: predictions, // Return predictions directly to match frontend expectations
     });
   } catch (error) {
     console.error('Error generating enhanced lottery predictions:', error);

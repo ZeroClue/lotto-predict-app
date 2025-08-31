@@ -45,7 +45,7 @@ export class LotteryDataService {
     }
 
     if (draws.length === 0) {
-      throw new Error('No historical data available for predictions');
+      throw new Error('No historical lottery data found. Please ensure the lottery_draws table is populated with data.');
     }
 
     const frequencyAnalysis = this.analyzeNumberFrequency(draws);

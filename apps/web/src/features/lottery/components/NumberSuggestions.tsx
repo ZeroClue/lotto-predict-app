@@ -166,7 +166,7 @@ export function NumberSuggestions({
           {/* Hot Numbers Section */}
           <Box>
             <HStack spacing={2} mb={3}>
-              <Icon as={FireIcon} color="red.500" boxSize={5} />
+              <Icon as={FaFire} color="red.500" boxSize={5} />
               <Text fontSize="sm" color={textColor} fontWeight="bold">
                 Hot Numbers (Most Frequent)
               </Text>

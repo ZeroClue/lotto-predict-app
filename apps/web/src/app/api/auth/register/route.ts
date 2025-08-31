@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { userRepository } from '@/lib/repositories/userRepository';
 
 export async function POST(request: Request) {
   try {
@@ -30,12 +31,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Registration failed: No user or session data' }, { status: 400 });
     }
 
-    // Return user and session token
-    return NextResponse.json({
-      message: 'User registered successfully',
-      user: { id: data.user.id, email: data.user.email, username: data.user.user_metadata.username }, // Include username from metadata
-      token: data.session.access_token,
-    }, { status: 201 });
+    // Verify that user record was created in our users table (by the database trigger)
+    // If not, create it manually as a fallback
+    try {
+      let userRecord = await userRepository.findByEmail(email);
+      
+      if (!userRecord) {
+        console.log('Database trigger failed, creating user record manually');
+        userRecord = await userRepository.create({
+          id: data.user.id,
+          email: data.user.email,
+          username: username,
+          provider: 'email'
+        });
+      }
+
+      // Return user and session token
+      return NextResponse.json({
+        message: 'User registered successfully',
+        user: { 
+          id: userRecord.id, 
+          email: userRecord.email, 
+          username: userRecord.username 
+        },
+        token: data.session.access_token,
+      }, { status: 201 });
+    } catch (dbError: any) {
+      console.error('Failed to create/verify user record:', dbError);
+      // Still return success since auth user was created successfully
+      return NextResponse.json({
+        message: 'User registered successfully',
+        user: { id: data.user.id, email: data.user.email, username: data.user.user_metadata.username },
+        token: data.session.access_token,
+      }, { status: 201 });
+    }
   } catch (error: any) {
     console.error('Registration error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
