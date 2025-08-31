@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { lotteryService, LotteryPrediction, LotteryDraw } from '../features/lottery/services/lotteryService';
-import { AnalyticsFilters, AdvancedAnalytics } from '../../../lib/services/lotteryAnalyticsService';
+import { AnalyticsFilters, AdvancedAnalytics } from '../lib/services/lotteryAnalyticsService';
 
 interface PredictionState {
   predictions: LotteryPrediction | null;

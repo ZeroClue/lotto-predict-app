@@ -14,7 +14,7 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { TrendingUp, TrendingDown, Minus } from 'react-icons/fi';
+import { FiTrendingUp, FiTrendingDown, FiMinus } from 'react-icons/fi';
 import {
   BarChart,
   Bar,
@@ -44,11 +44,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const trendScore = (parseInt(label, 10) % 3) - 1; // Mock trend
     let trendIcon;
     if (trendScore > 0) {
-      trendIcon = <Icon as={TrendingUp} color="green.500" />;
+      trendIcon = <Icon as={FiTrendingUp} color="green.500" />;
     } else if (trendScore < 0) {
-      trendIcon = <Icon as={TrendingDown} color="red.500" />;
+      trendIcon = <Icon as={FiTrendingDown} color="red.500" />;
     } else {
-      trendIcon = <Icon as={Minus} color="gray.500" />;
+      trendIcon = <Icon as={FiMinus} color="gray.500" />;
     }
 
     return (
@@ -145,11 +145,11 @@ export function HistoricalChart({
             {showTrendIndicators && (
               <>
               <HStack spacing={1}>
-                <Icon as={TrendingUp} color="green.500" />
+                <Icon as={FiTrendingUp} color="green.500" />
                 <Text fontSize="xs" color={textColor}>Trending Up</Text>
               </HStack>
               <HStack spacing={1}>
-                <Icon as={TrendingDown} color="red.500" />
+                <Icon as={FiTrendingDown} color="red.500" />
                 <Text fontSize="xs" color={textColor}>Trending Down</Text>
               </HStack>
               </>

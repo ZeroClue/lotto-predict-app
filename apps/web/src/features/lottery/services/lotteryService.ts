@@ -58,7 +58,10 @@ export class LotteryService {
     }
 
     const url = `/api/lottery/draws${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-    const response = await apiClient.get<LotteryDrawsResponse>(url);
+    const axiosResponse = await apiClient.get<LotteryDrawsResponse>(url);
+    
+    // Axios wraps the response in { data: actualResponse }
+    const response = axiosResponse.data;
     
     if (!response.success) {
       throw new Error('Failed to fetch lottery draws');
@@ -79,7 +82,10 @@ export class LotteryService {
     }
 
     const url = `/api/lottery/predictions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-    const response = await apiClient.get<LotteryPredictionsResponse>(url);
+    const axiosResponse = await apiClient.get<LotteryPredictionsResponse>(url);
+    
+    // Axios wraps the response in { data: actualResponse }
+    const response = axiosResponse.data;
     
     if (!response.success) {
       throw new Error('Failed to fetch predictions');
@@ -114,7 +120,10 @@ export class LotteryService {
     }
 
     const url = `/api/lottery/analytics${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
-    const response = await apiClient.get<AdvancedAnalyticsResponse>(url);
+    const axiosResponse = await apiClient.get<AdvancedAnalyticsResponse>(url);
+
+    // Axios wraps the response in { data: actualResponse }
+    const response = axiosResponse.data;
 
     if (!response.success) {
       throw new Error('Failed to fetch advanced analytics');
