@@ -7,19 +7,12 @@ import { useAuthStore } from '@/stores/authStore';
 class TokenService {
   /**
    * Get the current authentication token
-   * Prioritizes Zustand store over localStorage for better security
+   * Gets token from Zustand store (primary method)
    */
   getToken(): string | null {
-    // First try to get token from Zustand store (preferred method)
+    // Get token from Zustand store
     const authState = useAuthStore.getState();
-    if (authState.token) {
-      return authState.token;
-    }
-
-    // Fallback to localStorage for backward compatibility
-    // This should eventually be phased out
-    const fallbackToken = localStorage.getItem('supabase.auth.token');
-    return fallbackToken || null;
+    return authState.token;
   }
 
   /**
@@ -50,28 +43,21 @@ class TokenService {
   }
 
   /**
-   * Store token in Zustand store and localStorage
+   * Store token in Zustand store
    * @param token - The authentication token to store
    * @param user - The user object associated with the token
    */
   setToken(token: string, user: any): void {
     // Update Zustand store (primary storage)
     useAuthStore.getState().login(user, token);
-    
-    // Also update localStorage for backward compatibility
-    // TODO: Remove this once all token access is centralized
-    localStorage.setItem('supabase.auth.token', token);
   }
 
   /**
-   * Clear token from both Zustand store and localStorage
+   * Clear token from Zustand store
    */
   clearToken(): void {
     // Clear from Zustand store
     useAuthStore.getState().logout();
-    
-    // Clear from localStorage
-    localStorage.removeItem('supabase.auth.token');
   }
 
   /**

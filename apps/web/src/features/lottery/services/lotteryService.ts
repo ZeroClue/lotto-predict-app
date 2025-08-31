@@ -57,7 +57,7 @@ export class LotteryService {
       searchParams.set('lotteryName', params.lotteryName);
     }
 
-    const url = `/api/lottery/draws${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    const url = `/lottery/draws${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
     const axiosResponse = await apiClient.get<LotteryDrawsResponse>(url);
     
     // Axios wraps the response in { data: actualResponse }
@@ -81,7 +81,7 @@ export class LotteryService {
       searchParams.set('lotteryName', lotteryName);
     }
 
-    const url = `/api/lottery/predictions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    const url = `/lottery/predictions${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
     const axiosResponse = await apiClient.get<LotteryPredictionsResponse>(url);
     
     // Axios wraps the response in { data: actualResponse }
@@ -119,7 +119,7 @@ export class LotteryService {
       searchParams.set('periodLength', filters.periodLength.toString());
     }
 
-    const url = `/api/lottery/analytics${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
+    const url = `/lottery/analytics${searchParams.toString() ? '?' + searchParams.toString() : ''}`;
     const axiosResponse = await apiClient.get<AdvancedAnalyticsResponse>(url);
 
     // Axios wraps the response in { data: actualResponse }

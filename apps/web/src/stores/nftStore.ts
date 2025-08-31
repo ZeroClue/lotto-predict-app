@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { NFT } from '../lib/types';
+import { tokenService } from '../lib/services/tokenService';
 
 interface NFTStore {
   // State
@@ -55,15 +56,11 @@ export const useNFTStore = create<NFTStore>((set, get) => ({
     try {
       set({ isLoadingNFTs: true, nftsError: null });
       
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
+      // Get auth headers from centralized token service
+      const headers = tokenService.getAuthHeaders();
 
       const response = await fetch('/api/nfts', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
       });
       
       const result = await response.json();
@@ -88,17 +85,12 @@ export const useNFTStore = create<NFTStore>((set, get) => ({
 
   setNFTFeatured: async (nftId: string, isFeatured: boolean) => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
+      // Get auth headers from centralized token service
+      const headers = tokenService.getAuthHeaders();
 
       const response = await fetch(`/api/nfts/${nftId}/feature`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
+        headers,
         body: JSON.stringify({ isFeatured }),
       });
 

@@ -8,8 +8,8 @@ import {
   Icon,
   useColorModeValue,
   Badge,
+  keyframes,
 } from '@chakra-ui/react';
-import { keyframes } from '@emotion/react';
 import { FaCoins, FaTrophy } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 
