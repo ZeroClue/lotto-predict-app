@@ -14,7 +14,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAuthenticated } = useAuthStore();
   const { balance, fetchBalance } = useCryptoStore();
   const { nfts, fetchNFTs } = useNFTStore();
   const router = useRouter();
