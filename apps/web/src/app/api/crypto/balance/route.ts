@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 import { GameService } from '../../../../lib/services/gameService';
 
 function getSupabaseServiceClient() {
@@ -12,23 +14,40 @@ const gameService = new GameService();
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user from session
+    // Try both authentication methods - Bearer token and cookies
+    let user = null;
+    let authError = null;
+
+    // First try Bearer token authentication
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication required',
-      }, { status: 401 });
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const supabaseService = getSupabaseServiceClient();
+      const { data: { user: tokenUser }, error: tokenError } = await supabaseService.auth.getUser(token);
+      if (!tokenError && tokenUser) {
+        user = tokenUser;
+      } else {
+        authError = tokenError;
+      }
     }
 
-    const token = authHeader.substring(7);
-    const supabase = getSupabaseServiceClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    // If Bearer token failed, try cookie-based authentication
+    if (!user) {
+      const cookieStore = cookies();
+      const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+      const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser();
+      if (!cookieError && cookieUser) {
+        user = cookieUser;
+      } else {
+        authError = cookieError;
+      }
+    }
     
-    if (authError || !user) {
+    if (!user) {
       return NextResponse.json({
         success: false,
         error: 'Invalid authentication token',
+        debug: authError?.message,
       }, { status: 401 });
     }
 
