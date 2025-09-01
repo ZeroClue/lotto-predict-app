@@ -102,8 +102,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     try {
       set({ isCompletingGame: true, completionError: null });
 
-      // Get auth headers from centralized token service
-      const headers = tokenService.getAuthHeaders();
+      // Get auth headers from centralized token service (with required auth)
+      const headers = tokenService.getAuthHeaders(true);
       
       const response = await fetch(`/api/games/${gameId}/complete`, {
         method: 'POST',

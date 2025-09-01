@@ -29,13 +29,14 @@ interface GameState {
   isUserTurn: boolean;
   gameComplete: boolean;
   gameOver: boolean;
+  gameStarted: boolean;
   feedback: string;
 }
 
 const COLORS: GameColor[] = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
 const MAX_ROUNDS = 5;
-const DISPLAY_SPEED = 800; // ms
-const DISPLAY_PAUSE = 200; // ms between colors
+const DISPLAY_SPEED = 1200; // ms - longer for better visibility
+const DISPLAY_PAUSE = 400; // ms between colors - longer pause
 
 export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemoryGameProps) {
   const [gameState, setGameState] = useState<GameState>({
@@ -46,7 +47,8 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
     isUserTurn: false,
     gameComplete: false,
     gameOver: false,
-    feedback: 'Watch the color sequence, then repeat it!',
+    gameStarted: false,
+    feedback: 'Ready to test your memory? Click Start to begin!',
   });
 
   const [activeColor, setActiveColor] = useState<GameColor | null>(null);
@@ -103,9 +105,17 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
     displaySequence(newSequence);
   }, [gameState.currentRound, generateSequence, displaySequence]);
 
-  useEffect(() => {
-    startNewRound();
-  }, []); // Only run on mount
+  const startGame = () => {
+    setGameState(prev => ({
+      ...prev,
+      gameStarted: true,
+      feedback: 'Get ready for Round 1...'
+    }));
+    
+    setTimeout(() => {
+      startNewRound();
+    }, 1000);
+  };
 
   const handleColorClick = (color: GameColor) => {
     if (!gameState.isUserTurn || gameState.gameComplete || gameState.gameOver) return;
@@ -170,13 +180,10 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
       isUserTurn: false,
       gameComplete: false,
       gameOver: false,
-      feedback: 'Watch the color sequence, then repeat it!',
+      gameStarted: false,
+      feedback: 'Ready to test your memory? Click Start to begin!',
     });
     setActiveColor(null);
-    
-    setTimeout(() => {
-      startNewRound();
-    }, 500);
   };
 
   const handleComplete = () => {
@@ -205,24 +212,26 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
           </Text>
         </Box>
 
-        <VStack spacing={4} width="100%">
-          <HStack spacing={4} width="100%">
-            <Text fontSize="sm" color={textColor}>
-              Round: {gameState.currentRound}/{MAX_ROUNDS}
-            </Text>
-            <Text fontSize="sm" color={textColor}>
-              Progress: {gameState.userSequence.length}/{gameState.sequence.length}
-            </Text>
-          </HStack>
-          
-          <Progress
-            value={(gameState.userSequence.length / Math.max(gameState.sequence.length, 1)) * 100}
-            colorScheme="blue"
-            width="100%"
-            height="8px"
-            borderRadius="md"
-          />
-        </VStack>
+        {gameState.gameStarted && (
+          <VStack spacing={4} width="100%">
+            <HStack spacing={4} width="100%">
+              <Text fontSize="sm" color={textColor}>
+                Round: {gameState.currentRound}/{MAX_ROUNDS}
+              </Text>
+              <Text fontSize="sm" color={textColor}>
+                Progress: {gameState.userSequence.length}/{gameState.sequence.length}
+              </Text>
+            </HStack>
+            
+            <Progress
+              value={(gameState.userSequence.length / Math.max(gameState.sequence.length, 1)) * 100}
+              colorScheme="blue"
+              width="100%"
+              height="8px"
+              borderRadius="md"
+            />
+          </VStack>
+        )}
 
         <Grid templateColumns="repeat(3, 1fr)" gap={4} width="100%">
           {COLORS.map((color) => (
@@ -233,7 +242,7 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
               _hover={{ opacity: 0.8 }}
               _active={{ transform: 'scale(0.95)' }}
               onClick={() => handleColorClick(color)}
-              isDisabled={!gameState.isUserTurn || isCompleting}
+              isDisabled={!gameState.isUserTurn || isCompleting || !gameState.gameStarted}
               border={activeColor === color ? '4px solid white' : 'none'}
               shadow={activeColor === color ? 'lg' : 'md'}
               transform={activeColor === color ? 'scale(1.1)' : 'scale(1)'}
@@ -261,6 +270,17 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
           </Alert>
         )}
 
+        {!gameState.gameStarted && !gameState.gameComplete && !gameState.gameOver && (
+          <Button
+            colorScheme="blue"
+            size="lg"
+            onClick={startGame}
+            width="200px"
+          >
+            🎮 Start Game
+          </Button>
+        )}
+
         {gameState.gameComplete && (
           <Button
             colorScheme="green"
@@ -269,7 +289,7 @@ export function ColorMemoryGame({ onComplete, isCompleting = false }: ColorMemor
             isLoading={isCompleting}
             loadingText="Awarding crypto..."
           >
-            Claim Reward (12 coins)
+            Claim Reward (15 coins)
           </Button>
         )}
 

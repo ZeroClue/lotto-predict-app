@@ -57,7 +57,7 @@ export const useNFTStore = create<NFTStore>((set, get) => ({
       set({ isLoadingNFTs: true, nftsError: null });
       
       // Get auth headers from centralized token service
-      const headers = tokenService.getAuthHeaders();
+      const headers = tokenService.getAuthHeaders(true);
 
       const response = await fetch('/api/nfts', {
         headers,
@@ -86,7 +86,7 @@ export const useNFTStore = create<NFTStore>((set, get) => ({
   setNFTFeatured: async (nftId: string, isFeatured: boolean) => {
     try {
       // Get auth headers from centralized token service
-      const headers = tokenService.getAuthHeaders();
+      const headers = tokenService.getAuthHeaders(true);
 
       const response = await fetch(`/api/nfts/${nftId}/feature`, {
         method: 'PUT',

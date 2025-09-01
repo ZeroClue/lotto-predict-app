@@ -17,8 +17,9 @@ class TokenService {
 
   /**
    * Get authentication headers for API requests
+   * @param requireAuth - If true, throws error when no token is available
    */
-  getAuthHeaders(): Record<string, string> {
+  getAuthHeaders(requireAuth: boolean = false): Record<string, string> {
     const token = this.getToken();
     const baseHeaders = {
       'Content-Type': 'application/json',
@@ -29,6 +30,10 @@ class TokenService {
         ...baseHeaders,
         'Authorization': `Bearer ${token}`,
       };
+    }
+
+    if (requireAuth) {
+      throw new Error('Authentication required - no token found');
     }
 
     return baseHeaders;

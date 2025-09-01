@@ -49,7 +49,7 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
       set({ isLoadingBalance: true, balanceError: null });
 
       // Get auth headers from centralized token service
-      const headers = tokenService.getAuthHeaders();
+      const headers = tokenService.getAuthHeaders(true);
       
       const response = await fetch('/api/crypto/balance', {
         headers,
@@ -75,7 +75,7 @@ export const useCryptoStore = create<CryptoStore>((set, get) => ({
       set({ balanceError: null });
 
       // Get auth headers from centralized token service
-      const headers = tokenService.getAuthHeaders();
+      const headers = tokenService.getAuthHeaders(true);
       
       const response = await fetch('/api/crypto/balance', {
         headers,
