@@ -92,7 +92,17 @@ export class CryptoBalanceRepository {
     let balance = await this.getUserBalance(userId);
     
     if (!balance) {
-      balance = await this.initializeUserBalance(userId);
+      try {
+        balance = await this.initializeUserBalance(userId);
+      } catch (error) {
+        // If initialization fails, return a default balance instead of throwing
+        console.warn(`Failed to initialize crypto balance for user ${userId}:`, error);
+        return {
+          userId,
+          balance: 0.0,
+          updatedAt: new Date(),
+        };
+      }
     }
 
     return balance;
