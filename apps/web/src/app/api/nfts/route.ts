@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NFTService } from '../../../lib/services/nftService';
@@ -34,12 +34,28 @@ export async function GET(request: NextRequest) {
     // If Bearer token failed, try cookie-based authentication
     if (!user) {
       const cookieStore = cookies();
-      const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return cookieStore.get(name)?.value;
+            },
+            set(name: string, value: string, options: any) {
+              cookieStore.set(name, value, options);
+            },
+            remove(name: string, options: any) {
+              cookieStore.set(name, '', { ...options, maxAge: 0 });
+            },
+          },
+        }
+      );
       const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser();
-      if (!cookieError && cookieUser) {
-        user = cookieUser;
-      } else {
+      if (!cookieUser || cookieError) {
         authError = cookieError;
+      } else {
+        user = cookieUser;
       }
     }
     
