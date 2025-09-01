@@ -59,11 +59,7 @@ export class CryptoBalanceRepository {
    */
   async addToBalance(userId: string, amount: number): Promise<CryptoBalance> {
     // First, ensure the user has a balance record
-    let balance = await this.getUserBalance(userId);
-    
-    if (!balance) {
-      balance = await this.initializeUserBalance(userId);
-    }
+    let balance = await this.getOrCreateUserBalance(userId);
 
     const newBalance = balance.balance + amount;
 
