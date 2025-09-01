@@ -21,6 +21,8 @@ class TokenService {
    */
   getAuthHeaders(requireAuth: boolean = false): Record<string, string> {
     const token = this.getToken();
+    const authState = useAuthStore.getState();
+    
     const baseHeaders = {
       'Content-Type': 'application/json',
     };
@@ -33,6 +35,11 @@ class TokenService {
     }
 
     if (requireAuth) {
+      console.error('Authentication required but no token found. Auth state:', {
+        isAuthenticated: authState.isAuthenticated,
+        hasUser: !!authState.user,
+        hasToken: !!authState.token
+      });
       throw new Error('Authentication required - no token found');
     }
 

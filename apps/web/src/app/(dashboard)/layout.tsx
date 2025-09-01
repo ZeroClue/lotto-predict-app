@@ -26,16 +26,16 @@ export default function DashboardLayout({
   }, [user, router]);
 
   useEffect(() => {
-    if (user && !balance) {
+    if (user && !balance && isAuthenticated) {
       fetchBalance().catch(console.error);
     }
-  }, [user, balance, fetchBalance]);
+  }, [user, balance, isAuthenticated, fetchBalance]);
 
   useEffect(() => {
-    if (user && nfts.length === 0) {
+    if (user && nfts.length === 0 && isAuthenticated) {
       fetchNFTs().catch(console.error);
     }
-  }, [user, nfts.length, fetchNFTs]);
+  }, [user, nfts.length, isAuthenticated, fetchNFTs]);
 
   const handleLogout = async () => {
     await logout();
